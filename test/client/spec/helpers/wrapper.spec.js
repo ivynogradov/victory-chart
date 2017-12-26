@@ -7,8 +7,8 @@ import { assign } from "lodash";
 
 
 describe("helpers/wrapper", () => {
-  const getVictoryLine = (props) => React.createElement(VictoryLine, props);
-  const getVictoryAxis = (props) => React.createElement(VictoryAxis, props);
+  const getVictoryLine = (props) => <VictoryLine {...props} />;
+  const getVictoryAxis = (props) => <VictoryAxis {...props} />;
 
   describe("getY0", () => {
     const data = [

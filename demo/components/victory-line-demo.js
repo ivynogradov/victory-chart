@@ -81,11 +81,8 @@ export default class App extends React.Component {
     window.clearInterval(this.setStateInterval);
   }
 
-  getTransitionData() {
-    const lines = random(6, 10);
-    return range(lines).map((line) => {
-      return { x: line, y: random(2, 10) };
-    });
+  getArrayData() {
+    return range(40).map((i) => [i, i + (Math.random() * 3)]);
   }
 
   getData() {
@@ -96,16 +93,19 @@ export default class App extends React.Component {
       };
     });
   }
-  getArrayData() {
-    return range(40).map((i) => [i, i + (Math.random() * 3)]);
-  }
-
   getStyles() {
     const colors = ["red", "orange", "cyan", "green", "blue", "purple"];
     return {
       stroke: colors[random(0, 5)],
       strokeWidth: random(1, 5)
     };
+  }
+
+  getTransitionData() {
+    const lines = random(6, 10);
+    return range(lines).map((line) => {
+      return { x: line, y: random(2, 10) };
+    });
   }
 
   render() {

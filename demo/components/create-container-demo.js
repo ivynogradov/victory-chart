@@ -245,17 +245,15 @@ const Charts = ({ behaviors }) => { // eslint-disable-line react/prop-types
   );
 };
 
-class App extends React.Component {
-  render() {
-    return (
-      <div className="demo">
-        <Charts behaviors={["zoom", "voronoi"]} />
-        <Charts behaviors={["zoom", "cursor"]} />
-        <Charts behaviors={["cursor", "voronoi"]} />
-        <Charts behaviors={["brush", "voronoi"]} />
-      </div>
-    );
-  }
+function App(props) {
+  return (
+    <div className="demo">
+      <Charts behaviors={["zoom", "voronoi"]} />
+      <Charts behaviors={["zoom", "cursor"]} />
+      <Charts behaviors={["cursor", "voronoi"]} />
+      <Charts behaviors={["brush", "voronoi"]} />
+    </div>
+  );
 }
 
 export default App;

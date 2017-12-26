@@ -13,9 +13,23 @@ const fallbackProps = {
 };
 
 export default class VictoryStack extends React.Component {
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    groupComponent: <g/>,
+    scale: "linear",
+    standalone: true,
+    theme: VictoryTheme. grayscale
+  };
+
   static displayName = "VictoryStack";
 
-  static role = "stack";
+  static expectedComponents = [
+    "groupComponent", "containerComponent", "labelComponent"
+  ];
+
+  static getData = Wrapper.getData.bind(Wrapper);
+
+  static getDomain = Wrapper.getStackedDomain.bind(Wrapper);
 
   static propTypes = {
     ...BaseProps,
@@ -42,21 +56,7 @@ export default class VictoryStack extends React.Component {
     }),
     xOffset: PropTypes.number
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    groupComponent: <g/>,
-    scale: "linear",
-    standalone: true,
-    theme: VictoryTheme. grayscale
-  };
-
-  static expectedComponents = [
-    "groupComponent", "containerComponent", "labelComponent"
-  ];
-
-  static getDomain = Wrapper.getStackedDomain.bind(Wrapper);
-  static getData = Wrapper.getData.bind(Wrapper);
+  static role = "stack";
 
   constructor(props) {
     super(props);
@@ -115,25 +115,6 @@ export default class VictoryStack extends React.Component {
     return { datasets, categories, range, domain, horizontal, scale, style, colorScale, role };
   }
 
-  addLayoutData(props, calculatedProps, datasets, index) { // eslint-disable-line max-params
-    const xOffset = props.xOffset || 0;
-    return datasets[index].map((datum) => {
-      const yOffset = Wrapper.getY0(datum, index, calculatedProps) || 0;
-      return assign({}, datum, {
-        _y0: datum._y instanceof Date ? yOffset && new Date(yOffset) || datum._y : yOffset,
-        _y1: datum._y instanceof Date ? new Date(+datum._y + +yOffset) : datum._y + yOffset,
-        _x1: datum._x instanceof Date ? new Date(+datum._x + +xOffset) : datum._x + xOffset
-      });
-    });
-  }
-
-  getLabels(props, datasets, index) {
-    if (!props.labels) {
-      return undefined;
-    }
-    return datasets.length === index + 1 ? props.labels : undefined;
-  }
-
   getChildProps(props, calculatedProps) {
     const { categories, domain, range, scale, horizontal } = calculatedProps;
     return {
@@ -158,6 +139,21 @@ export default class VictoryStack extends React.Component {
     }
     return props.theme ? colorScaleOptions || props.theme.props.colorScale
     : colorScaleOptions;
+  }
+
+  getContainerProps(props, calculatedProps) {
+    const { width, height, standalone, theme, polar } = props;
+    const { domain, scale, style, origin } = calculatedProps;
+    return {
+      domain, scale, width, height, standalone, theme, style: style.parent, polar, origin
+    };
+  }
+
+  getLabels(props, datasets, index) {
+    if (!props.labels) {
+      return undefined;
+    }
+    return datasets.length === index + 1 ? props.labels : undefined;
   }
 
   // the old ones were bad
@@ -186,22 +182,26 @@ export default class VictoryStack extends React.Component {
     });
   }
 
-  renderContainer(containerComponent, props) {
-    const containerProps = defaults({}, containerComponent.props, props);
-    return React.cloneElement(containerComponent, containerProps);
-  }
-
-  getContainerProps(props, calculatedProps) {
-    const { width, height, standalone, theme, polar } = props;
-    const { domain, scale, style, origin } = calculatedProps;
-    return {
-      domain, scale, width, height, standalone, theme, style: style.parent, polar, origin
-    };
-  }
-
   getStyle(theme, style, role) {
     const defaultStyle = theme && theme[role] && theme[role].style ? theme[role].style : {};
     return Helpers.getStyles(style, defaultStyle);
+  }
+
+  addLayoutData(props, calculatedProps, datasets, index) { // eslint-disable-line max-params
+    const xOffset = props.xOffset || 0;
+    return datasets[index].map((datum) => {
+      const yOffset = Wrapper.getY0(datum, index, calculatedProps) || 0;
+      return assign({}, datum, {
+        _y0: datum._y instanceof Date ? yOffset && new Date(yOffset) || datum._y : yOffset,
+        _y1: datum._y instanceof Date ? new Date(+datum._y + +yOffset) : datum._y + yOffset,
+        _x1: datum._x instanceof Date ? new Date(+datum._x + +xOffset) : datum._x + xOffset
+      });
+    });
+  }
+
+  renderContainer(containerComponent, props) {
+    const containerProps = defaults({}, containerComponent.props, props);
+    return React.cloneElement(containerComponent, containerProps);
   }
 
   render() {

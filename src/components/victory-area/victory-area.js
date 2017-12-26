@@ -2,10 +2,7 @@ import { partialRight } from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
 import AreaHelpers from "./helper-methods";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, VictoryContainer,
-  DefaultTransitions, Area, VictoryClipContainer, addEvents, VictoryTheme, Data, Domain
-} from "victory-core";
+import { Helpers, VictoryLabel, VictoryContainer, DefaultTransitions, Area, VictoryClipContainer, addEvents, VictoryTheme, Data, Domain } from "victory-core";
 import { BaseProps, DataProps } from "../../helpers/common-props";
 
 const fallbackProps = {
@@ -25,18 +22,9 @@ const animationWhitelist = ["data", "domain", "height", "padding", "style", "wid
 
 class VictoryArea extends React.Component {
 
-  static propTypes = {
-    ...BaseProps,
-    ...DataProps,
-    interpolation: PropTypes.oneOf([
-      "basis", "cardinal", "catmullRom", "linear", "monotoneX",
-      "monotoneY", "natural", "step", "stepAfter", "stepBefore"
-    ]),
-    label: CustomPropTypes.deprecated(
-      PropTypes.string,
-      "Use `labels` instead for individual data labels"
-    )
-  };
+  static continuous = true;
+
+  static defaultPolarTransitions = DefaultTransitions.continuousPolarTransitions();
 
   static defaultProps = {
     containerComponent: <VictoryContainer />,
@@ -50,18 +38,27 @@ class VictoryArea extends React.Component {
     standalone: true,
     theme: VictoryTheme.grayscale
   };
-
-  static displayName = "VictoryArea";
-  static role = "area";
-  static continuous = true;
   static defaultTransitions = DefaultTransitions.continuousTransitions();
-  static defaultPolarTransitions = DefaultTransitions.continuousPolarTransitions();
-  static getDomain = Domain.getDomainWithZero.bind(Domain);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(AreaHelpers.getBaseProps.bind(AreaHelpers), fallbackProps);
+  static displayName = "VictoryArea";
   static expectedComponents = [
     "dataComponent", "labelComponent", "groupComponent", "containerComponent"
   ];
+  static getBaseProps = partialRight(AreaHelpers.getBaseProps.bind(AreaHelpers), fallbackProps);
+  static getData = Data.getData.bind(Data);
+  static getDomain = Domain.getDomainWithZero.bind(Domain);
+  static propTypes = {
+    ...BaseProps,
+    ...DataProps,
+    interpolation: PropTypes.oneOf([
+      "basis", "cardinal", "catmullRom", "linear", "monotoneX",
+      "monotoneY", "natural", "step", "stepAfter", "stepBefore"
+    ]),
+    label: CustomPropTypes.deprecated(
+      PropTypes.string,
+      "Use `labels` instead for individual data labels"
+    )
+  };
+  static role = "area";
 
   // Overridden in native versions
   shouldAnimate() {

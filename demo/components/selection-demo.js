@@ -15,16 +15,16 @@ class App extends React.Component {
     };
   }
 
+  handleClearSelection() {
+    this.setState({ points: [] });
+  }
+
   handleSelection(datasets) {
     const points = datasets.reduce((memo, dataset) => {
       memo = memo.concat(dataset.data);
       return memo;
     }, []);
     this.setState({ points });
-  }
-
-  handleClearSelection() {
-    this.setState({ points: [] });
   }
 
   listData() {

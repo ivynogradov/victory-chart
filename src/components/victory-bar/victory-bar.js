@@ -23,9 +23,18 @@ const defaultData = [
 const animationWhitelist = ["data", "domain", "height", "padding", "style", "width"];
 
 class VictoryBar extends React.Component {
-  static displayName = "VictoryBar";
-
-  static role = "bar";
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    data: defaultData,
+    dataComponent: <Bar/>,
+    groupComponent: <g role="presentation"/>,
+    labelComponent: <VictoryLabel/>,
+    samples: 50,
+    scale: "linear",
+    sortOrder: "ascending",
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
 
   static defaultTransitions = {
     onLoad: {
@@ -44,6 +53,16 @@ class VictoryBar extends React.Component {
     }
   };
 
+  static displayName = "VictoryBar";
+
+  static expectedComponents = [
+    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
+  ];
+
+  static getBaseProps = partialRight(BarHelpers.getBaseProps.bind(BarHelpers), fallbackProps);
+
+  static getData = Data.getData.bind(Data);
+  static getDomain = Domain.getDomainWithZero.bind(Domain);
   static propTypes = {
     ...BaseProps,
     ...DataProps,
@@ -52,26 +71,7 @@ class VictoryBar extends React.Component {
     cornerRadius: PropTypes.number,
     horizontal: PropTypes.bool
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    data: defaultData,
-    dataComponent: <Bar/>,
-    groupComponent: <g role="presentation"/>,
-    labelComponent: <VictoryLabel/>,
-    samples: 50,
-    scale: "linear",
-    sortOrder: "ascending",
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static getDomain = Domain.getDomainWithZero.bind(Domain);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(BarHelpers.getBaseProps.bind(BarHelpers), fallbackProps);
-  static expectedComponents = [
-    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
-  ];
+  static role = "bar";
 
   // Overridden in native versions
   shouldAnimate() {

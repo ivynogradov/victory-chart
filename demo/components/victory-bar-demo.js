@@ -74,6 +74,22 @@ export default class App extends React.Component {
     });
   }
 
+  getBarTransitionData() {
+    const bars = random(6, 10);
+    return range(bars).map((bar) => {
+      return { a: bar + 1, b: random(2, 10) };
+    });
+  }
+
+  getMultiTransitionData() {
+    const bars = random(3, 5);
+    return range(4).map(() => {
+      return range(bars).map((bar) => {
+        return { x: bar + 1, y: random(2, 10) };
+      });
+    });
+  }
+
   getNumericBarData() {
     return range(5).map(() => {
       return [
@@ -90,22 +106,6 @@ export default class App extends React.Component {
           y: random(0, 15)
         }
       ];
-    });
-  }
-
-  getBarTransitionData() {
-    const bars = random(6, 10);
-    return range(bars).map((bar) => {
-      return { a: bar + 1, b: random(2, 10) };
-    });
-  }
-
-  getMultiTransitionData() {
-    const bars = random(3, 5);
-    return range(4).map(() => {
-      return range(bars).map((bar) => {
-        return { x: bar + 1, y: random(2, 10) };
-      });
     });
   }
 
@@ -526,28 +526,26 @@ export default class App extends React.Component {
   }
 }
 
-class ChartWrap extends React.Component {
-  static propTypes = {
-    children: PropTypes.any,
-    height: PropTypes.number,
-    width: PropTypes.number
-  };
-  static defaultProps = {
-    height: 250,
-    width: 350
-  };
-  // renders both a standalone chart, and a version wrapped in VictoryChart,
-  // to test both cases at once
-  render() {
-    const parentStyle = { border: "1px solid #ccc", margin: "2%", maxWidth: "40%" };
+function ChartWrap(props) {
+  const parentStyle = { border: "1px solid #ccc", margin: "2%", maxWidth: "40%" };
 
-    return (
-      <div style={{ parent: parentStyle }}>
-        {React.cloneElement(this.props.children)}
-        <VictoryChart {...this.props}>
-          {this.props.children}
-        </VictoryChart>
-      </div>
-    );
-  }
+  return (
+    <div style={{ parent: parentStyle }}>
+      {React.cloneElement(props.children)}
+      <VictoryChart {...props}>
+        {props.children}
+      </VictoryChart>
+    </div>
+  );
 }
+
+ChartWrap.propTypes = {
+  children: PropTypes.any,
+  height: PropTypes.number,
+  width: PropTypes.number
+};
+
+ChartWrap.defaultProps = {
+  height: 250,
+  width: 350
+};

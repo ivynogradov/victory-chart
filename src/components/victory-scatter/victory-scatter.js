@@ -1,10 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { partialRight } from "lodash";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, addEvents,
-  VictoryContainer, VictoryTheme, DefaultTransitions, Point, Data, Domain
-} from "victory-core";
+import { Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme, DefaultTransitions, Point, Data, Domain } from "victory-core";
 import ScatterHelpers from "./helper-methods";
 import { BaseProps, DataProps } from "../../helpers/common-props";
 
@@ -21,10 +18,29 @@ const animationWhitelist = [
 ];
 
 class VictoryScatter extends React.Component {
-  static displayName = "VictoryScatter";
-  static role = "scatter";
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    dataComponent: <Point/>,
+    labelComponent: <VictoryLabel/>,
+    groupComponent: <g/>,
+    samples: 50,
+    scale: "linear",
+    sortOrder: "ascending",
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
   static defaultTransitions = DefaultTransitions.discreteTransitions();
+  static displayName = "VictoryScatter";
 
+  static expectedComponents = [
+    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
+  ];
+
+  static getBaseProps = partialRight(
+    ScatterHelpers.getBaseProps.bind(ScatterHelpers), fallbackProps);
+
+  static getData = Data.getData.bind(Data);
+  static getDomain = Domain.getDomain.bind(Domain);
   static propTypes = {
     ...BaseProps,
     ...DataProps,
@@ -39,26 +55,7 @@ class VictoryScatter extends React.Component {
       PropTypes.func
     ])
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    dataComponent: <Point/>,
-    labelComponent: <VictoryLabel/>,
-    groupComponent: <g/>,
-    samples: 50,
-    scale: "linear",
-    sortOrder: "ascending",
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static getDomain = Domain.getDomain.bind(Domain);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(
-    ScatterHelpers.getBaseProps.bind(ScatterHelpers), fallbackProps);
-  static expectedComponents = [
-    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
-  ];
+  static role = "scatter";
 
   // Overridden in native versions
   shouldAnimate() {

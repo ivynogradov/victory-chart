@@ -6,8 +6,8 @@ import React from "react";
 import { VictoryAxis, VictoryBar } from "src/index";
 
 describe("helpers/axis", () => {
-  const getVictoryAxis = (props) => React.createElement(VictoryAxis, props);
-  const getVictoryBar = (props) => React.createElement(VictoryBar, props);
+  const getVictoryAxis = (props) => <VictoryAxis {...props} />;
+  const getVictoryBar = (props) => <VictoryBar {...props} />;
 
   describe("getAxisComponent", () => {
     const dependentAxis = getVictoryAxis({ dependentAxis: true });

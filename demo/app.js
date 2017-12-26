@@ -25,12 +25,10 @@ import SelectionDemo from "./components/selection-demo";
 import PolarDemo from "./components/victory-polar-chart-demo";
 import DebugDemo from "./components/debug-demo";
 
-class Home extends React.Component {
-  render() {
-    return (
-      <h1>Pick A Demo</h1>
-    );
-  }
+function Home(props) {
+  return (
+    <h1>Pick A Demo</h1>
+  );
 }
 
 class App extends React.Component {
@@ -112,5 +110,3 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App/>, document.getElementById("content"));
-
-

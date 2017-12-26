@@ -2,10 +2,7 @@ import { partialRight } from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
 import LineHelpers from "./helper-methods";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme,
-  DefaultTransitions, Curve, VictoryClipContainer, Data, Domain
-} from "victory-core";
+import { Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme, DefaultTransitions, Curve, VictoryClipContainer, Data, Domain } from "victory-core";
 import { BaseProps, DataProps } from "../../helpers/common-props";
 
 const fallbackProps = {
@@ -24,25 +21,8 @@ const options = {
 const animationWhitelist = ["data", "domain", "height", "padding", "samples", "style", "width"];
 
 class VictoryLine extends React.Component {
-  static displayName = "VictoryLine";
-  static role = "line";
-  static defaultTransitions = DefaultTransitions.continuousTransitions();
-  static defaultPolarTransitions = DefaultTransitions.continuousPolarTransitions();
   static continuous = true;
-
-  static propTypes = {
-    ...BaseProps,
-    ...DataProps,
-    interpolation: PropTypes.oneOf([
-      "basis", "bundle", "cardinal", "catmullRom", "linear", "monotoneX",
-      "monotoneY", "natural", "step", "stepAfter", "stepBefore"
-    ]),
-    label: CustomPropTypes.deprecated(
-      PropTypes.string,
-      "Use `labels` instead for individual data labels"
-    )
-  };
-
+  static defaultPolarTransitions = DefaultTransitions.continuousPolarTransitions();
   static defaultProps = {
     containerComponent: <VictoryContainer/>,
     dataComponent: <Curve/>,
@@ -55,14 +35,31 @@ class VictoryLine extends React.Component {
     standalone: true,
     theme: VictoryTheme.grayscale
   };
+  static defaultTransitions = DefaultTransitions.continuousTransitions();
+  static displayName = "VictoryLine";
 
-  static getDomain = Domain.getDomain.bind(Domain);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(LineHelpers.getBaseProps.bind(LineHelpers),
-    fallbackProps);
   static expectedComponents = [
     "dataComponent", "labelComponent", "groupComponent", "containerComponent"
   ];
+
+  static getBaseProps = partialRight(LineHelpers.getBaseProps.bind(LineHelpers),
+    fallbackProps);
+
+  static getData = Data.getData.bind(Data);
+  static getDomain = Domain.getDomain.bind(Domain);
+  static propTypes = {
+    ...BaseProps,
+    ...DataProps,
+    interpolation: PropTypes.oneOf([
+      "basis", "bundle", "cardinal", "catmullRom", "linear", "monotoneX",
+      "monotoneY", "natural", "step", "stepAfter", "stepBefore"
+    ]),
+    label: CustomPropTypes.deprecated(
+      PropTypes.string,
+      "Use `labels` instead for individual data labels"
+    )
+  };
+  static role = "line";
 
   // Overridden in native versions
   shouldAnimate() {

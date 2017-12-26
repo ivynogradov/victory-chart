@@ -1,10 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { assign, partialRight } from "lodash";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel,
-  VictoryContainer, VictoryTheme, Line, TextSize, addEvents
-} from "victory-core";
+import { Helpers, VictoryLabel, VictoryContainer, VictoryTheme, Line, TextSize, addEvents } from "victory-core";
 import AxisHelpers from "./helper-methods";
 import Axis from "../../helpers/axis";
 import { BaseProps } from "../../helpers/common-props";
@@ -33,9 +30,19 @@ const options = {
 };
 
 class VictoryAxis extends React.Component {
-  static displayName = "VictoryAxis";
-
-  static role = "axis";
+  static defaultProps = {
+    axisComponent: <Line type={"axis"}/>,
+    axisLabelComponent: <VictoryLabel/>,
+    tickLabelComponent: <VictoryLabel/>,
+    tickComponent: <Line type={"tick"}/>,
+    gridComponent: <Line type={"grid"}/>,
+    scale: "linear",
+    standalone: true,
+    theme: VictoryTheme.grayscale,
+    containerComponent: <VictoryContainer />,
+    groupComponent: <g role="presentation"/>,
+    fixLabelOverlap: false
+  };
 
   static defaultTransitions = {
     onExit: {
@@ -46,6 +53,19 @@ class VictoryAxis extends React.Component {
     }
   };
 
+  static displayName = "VictoryAxis";
+
+  static expectedComponents = [
+    "axisComponent", "axisLabelComponent", "groupComponent", "containerComponent",
+    "tickComponent", "tickLabelComponent", "gridComponent"
+  ];
+
+  static getAxis = Axis.getAxis.bind(Axis);
+
+  static getBaseProps = partialRight(AxisHelpers.getBaseProps.bind(AxisHelpers), fallbackProps);
+  static getDomain = AxisHelpers.getDomain.bind(AxisHelpers);
+  static getScale = AxisHelpers.getScale.bind(AxisHelpers);
+  static getStyles = partialRight(AxisHelpers.getStyles.bind(AxisHelpers), fallbackProps.style);
   static propTypes = {
     ...BaseProps,
     axisComponent: PropTypes.element,
@@ -84,62 +104,7 @@ class VictoryAxis extends React.Component {
     tickLabelComponent: PropTypes.element,
     tickValues: CustomPropTypes.homogeneousArray
   };
-
-  static defaultProps = {
-    axisComponent: <Line type={"axis"}/>,
-    axisLabelComponent: <VictoryLabel/>,
-    tickLabelComponent: <VictoryLabel/>,
-    tickComponent: <Line type={"tick"}/>,
-    gridComponent: <Line type={"grid"}/>,
-    scale: "linear",
-    standalone: true,
-    theme: VictoryTheme.grayscale,
-    containerComponent: <VictoryContainer />,
-    groupComponent: <g role="presentation"/>,
-    fixLabelOverlap: false
-  };
-
-  static getDomain = AxisHelpers.getDomain.bind(AxisHelpers);
-  static getAxis = Axis.getAxis.bind(Axis);
-  static getScale = AxisHelpers.getScale.bind(AxisHelpers);
-  static getStyles = partialRight(AxisHelpers.getStyles.bind(AxisHelpers), fallbackProps.style);
-  static getBaseProps = partialRight(AxisHelpers.getBaseProps.bind(AxisHelpers), fallbackProps);
-  static expectedComponents = [
-    "axisComponent", "axisLabelComponent", "groupComponent", "containerComponent",
-    "tickComponent", "tickLabelComponent", "gridComponent"
-  ];
-
-  renderLine(props) {
-    const { axisComponent } = props;
-    const axisProps = this.getComponentProps(axisComponent, "axis", 0);
-    return React.cloneElement(axisComponent, axisProps);
-  }
-
-  renderLabel(props) {
-    const { axisLabelComponent, label } = props;
-    if (!label) {
-      return null;
-    }
-    const axisLabelProps = this.getComponentProps(axisLabelComponent, "axisLabel", 0);
-    return React.cloneElement(axisLabelComponent, axisLabelProps);
-  }
-
-  renderGridAndTicks(props) {
-    const { tickComponent, tickLabelComponent, gridComponent } = props;
-
-    return this.dataKeys.map((key, index) => {
-      const tickProps = this.getComponentProps(tickComponent, "ticks", index);
-      const TickComponent = React.cloneElement(tickComponent, tickProps);
-      const gridProps = this.getComponentProps(gridComponent, "grid", index);
-      const GridComponent = React.cloneElement(gridComponent, gridProps);
-      const tickLabelProps = this.getComponentProps(tickLabelComponent, "tickLabels", index);
-      const TickLabel = React.cloneElement(tickLabelComponent, tickLabelProps);
-
-      return React.cloneElement(
-        props.groupComponent, { key: `tick-group-${key}` }, GridComponent, TickComponent, TickLabel
-      );
-    });
-  }
+  static role = "axis";
 
   fixLabelOverlap(gridAndTicks, props) {
     const isVertical = Helpers.isVertical(props);
@@ -180,6 +145,38 @@ class VictoryAxis extends React.Component {
   // Overridden in native versions
   shouldAnimate() {
     return !!this.props.animate;
+  }
+
+  renderGridAndTicks(props) {
+    const { tickComponent, tickLabelComponent, gridComponent } = props;
+
+    return this.dataKeys.map((key, index) => {
+      const tickProps = this.getComponentProps(tickComponent, "ticks", index);
+      const TickComponent = React.cloneElement(tickComponent, tickProps);
+      const gridProps = this.getComponentProps(gridComponent, "grid", index);
+      const GridComponent = React.cloneElement(gridComponent, gridProps);
+      const tickLabelProps = this.getComponentProps(tickLabelComponent, "tickLabels", index);
+      const TickLabel = React.cloneElement(tickLabelComponent, tickLabelProps);
+
+      return React.cloneElement(
+        props.groupComponent, { key: `tick-group-${key}` }, GridComponent, TickComponent, TickLabel
+      );
+    });
+  }
+
+  renderLabel(props) {
+    const { axisLabelComponent, label } = props;
+    if (!label) {
+      return null;
+    }
+    const axisLabelProps = this.getComponentProps(axisLabelComponent, "axisLabel", 0);
+    return React.cloneElement(axisLabelComponent, axisLabelProps);
+  }
+
+  renderLine(props) {
+    const { axisComponent } = props;
+    const axisProps = this.getComponentProps(axisComponent, "axis", 0);
+    return React.cloneElement(axisComponent, axisProps);
   }
 
   render() {

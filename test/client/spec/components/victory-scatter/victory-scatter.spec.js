@@ -11,9 +11,7 @@ import SvgTestHelper from "../../../../svg-test-helper";
 import VictoryScatter from "src/components/victory-scatter/victory-scatter";
 import { VictoryLabel, Point } from "victory-core";
 
-class MyPoint extends React.Component {
-  render() { }
-}
+function MyPoint(props) { }
 
 describe("components/victory-scatter", () => {
   describe("default component rendering", () => {

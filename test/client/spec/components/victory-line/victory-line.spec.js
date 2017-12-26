@@ -12,9 +12,7 @@ import SvgTestHelper from "../../../../svg-test-helper";
 import VictoryLine from "src/components/victory-line/victory-line";
 import { VictoryLabel, Curve } from "victory-core";
 
-class MyLineSegment extends React.Component {
-  render() { }
-}
+function MyLineSegment(props) { }
 
 describe("components/victory-line", () => {
   describe("default component rendering", () => {

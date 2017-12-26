@@ -50,15 +50,6 @@ class App extends React.Component {
     });
   }
 
-  getStaticData() {
-    const points = [ 10, 20, 30, 40, 50, 60];
-    return points.map((point) => {
-      const y = random(2, 10);
-      const x = point + random(0, 8);
-      return { x, y };
-    });
-  }
-
   getMaxData(data) {
     const groupedData = keys(data[0]).reduce((memo, key) => {
       memo[key] = data.map((d) => d[key]);
@@ -68,6 +59,15 @@ class App extends React.Component {
       memo[key] = Math.max(...groupedData[key]);
       return memo;
     }, {});
+  }
+
+  getStaticData() {
+    const points = [ 10, 20, 30, 40, 50, 60];
+    return points.map((point) => {
+      const y = random(2, 10);
+      const x = point + random(0, 8);
+      return { x, y };
+    });
   }
 
   processMultiAxisData(data) {

@@ -29,20 +29,15 @@ export default class App extends React.Component {
     }, 5000);
   }
 
-  getMultiTransitionData() {
-    const areas = random(8, 10);
-    return range(8).map(() => {
-      return range(areas).map((area) => {
-        return { x: area, y: random(2, 10) };
-      });
-    });
-  }
-
   getAreaTransitionData() {
     const areas = random(6, 10);
     return range(areas).map((area) => {
       return { x: area, y: random(2, 10) };
     });
+  }
+
+  getArrayData() {
+    return range(40).map((i) => [i, i + (Math.random() * 3)]);
   }
 
   getData() {
@@ -81,8 +76,13 @@ export default class App extends React.Component {
     });
   }
 
-  getArrayData() {
-    return range(40).map((i) => [i, i + (Math.random() * 3)]);
+  getMultiTransitionData() {
+    const areas = random(8, 10);
+    return range(8).map(() => {
+      return range(areas).map((area) => {
+        return { x: area, y: random(2, 10) };
+      });
+    });
   }
 
   getStyles() {

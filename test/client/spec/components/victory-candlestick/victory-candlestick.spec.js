@@ -9,9 +9,7 @@ import { range, omit } from "lodash";
 import VictoryCandlestick from "src/components/victory-candlestick/victory-candlestick";
 import { VictoryLabel, Candle } from "victory-core";
 
-class MyCandle extends React.Component {
-  render() { }
-}
+function MyCandle(props) { }
 
 const dataSet = [
   { x: 5, open: 10, close: 20, high: 25, low: 5 },

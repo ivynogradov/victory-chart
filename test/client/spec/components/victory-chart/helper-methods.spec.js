@@ -8,9 +8,9 @@ import Wrapper from "src/helpers/wrapper";
 import { assign } from "lodash";
 
 describe("victory-chart/helpers-methods", () => {
-  const getVictoryLine = (props) => React.createElement(VictoryLine, props);
-  const getVictoryAxis = (props) => React.createElement(VictoryAxis, props);
-  const getVictoryBar = (props) => React.createElement(VictoryBar, props);
+  const getVictoryLine = (props) => <VictoryLine {...props} />;
+  const getVictoryAxis = (props) => <VictoryAxis {...props} />;
+  const getVictoryBar = (props) => <VictoryBar {...props} />;
 
   describe("getChildComponents", () => {
     const defaultAxes = {

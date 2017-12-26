@@ -1,9 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, addEvents,
-  VictoryContainer, VictoryTheme, DefaultTransitions, ErrorBar, Data
-} from "victory-core";
+import { Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme, DefaultTransitions, ErrorBar, Data } from "victory-core";
 import { partialRight } from "lodash";
 import ErrorBarHelpers from "./helper-methods";
 import { BaseProps, DataProps } from "../../helpers/common-props";
@@ -27,10 +24,30 @@ const animationWhitelist = [
 ];
 
 class VictoryErrorBar extends React.Component {
-  static displayName = "VictoryErrorBar";
-  static role = "errorBar";
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    data: defaultData,
+    dataComponent: <ErrorBar/>,
+    labelComponent: <VictoryLabel/>,
+    groupComponent: <g role="presentation"/>,
+    samples: 50,
+    scale: "linear",
+    sortOrder: "ascending",
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
   static defaultTransitions = DefaultTransitions.discreteTransitions();
+  static displayName = "VictoryErrorBar";
 
+  static expectedComponents = [
+    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
+  ];
+
+  static getBaseProps = partialRight(
+    ErrorBarHelpers.getBaseProps.bind(ErrorBarHelpers), fallbackProps);
+
+  static getData = Data.getData.bind(Data);
+  static getDomain = ErrorBarHelpers.getDomain.bind(ErrorBarHelpers);
   static propTypes = {
     ...BaseProps,
     ...DataProps,
@@ -49,27 +66,7 @@ class VictoryErrorBar extends React.Component {
     ]),
     horizontal: PropTypes.bool
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    data: defaultData,
-    dataComponent: <ErrorBar/>,
-    labelComponent: <VictoryLabel/>,
-    groupComponent: <g role="presentation"/>,
-    samples: 50,
-    scale: "linear",
-    sortOrder: "ascending",
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static getDomain = ErrorBarHelpers.getDomain.bind(ErrorBarHelpers);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(
-    ErrorBarHelpers.getBaseProps.bind(ErrorBarHelpers), fallbackProps);
-  static expectedComponents = [
-    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
-  ];
+  static role = "errorBar";
 
   // Overridden in native versions
   shouldAnimate() {

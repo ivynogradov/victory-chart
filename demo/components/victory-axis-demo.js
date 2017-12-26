@@ -29,15 +29,15 @@ export default class App extends React.Component {
     window.clearInterval(this.setStateInterval);
   }
 
+  getDomain() {
+    const someNumber = random(2, 5);
+    return [-someNumber, someNumber];
+  }
+
   getTickValues() {
     return range(5).map((i) => {
       return 10 * i + random(5);
     });
-  }
-
-  getDomain() {
-    const someNumber = random(2, 5);
-    return [-someNumber, someNumber];
   }
 
   render() {

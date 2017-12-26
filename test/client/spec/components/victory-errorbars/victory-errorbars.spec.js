@@ -11,9 +11,7 @@ import * as d3Scale from "d3-scale";
 import VictoryErrorBar from "src/components/victory-errorbar/victory-errorbar";
 import { ErrorBar } from "victory-core";
 
-class MyErrorBar extends React.Component {
-  render() { }
-}
+function MyErrorBar(props) { }
 
 describe("components/victory-errorbar", () => {
   describe("default component rendering", () => {

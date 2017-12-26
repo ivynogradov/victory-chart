@@ -1,9 +1,7 @@
+import CustomPropTypes from 'prop-types';
 import React from "react";
 import { partialRight } from "lodash";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, addEvents,
-  VictoryContainer, VictoryTheme, DefaultTransitions, Voronoi, Data, Domain
-} from "victory-core";
+import { Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme, DefaultTransitions, Voronoi, Data, Domain } from "victory-core";
 import VoronoiHelpers from "./helper-methods";
 import { BaseProps, DataProps } from "../../helpers/common-props";
 
@@ -18,16 +16,6 @@ const animationWhitelist = [
 ];
 
 class VictoryVoronoi extends React.Component {
-  static displayName = "VictoryVoronoi";
-  static role = "voronoi";
-  static defaultTransitions = DefaultTransitions.discreteTransitions();
-
-  static propTypes = {
-    ...BaseProps,
-    ...DataProps,
-    size: CustomPropTypes.nonNegative
-  };
-
   static defaultProps = {
     containerComponent: <VictoryContainer/>,
     dataComponent: <Voronoi/>,
@@ -39,14 +27,24 @@ class VictoryVoronoi extends React.Component {
     standalone: true,
     theme: VictoryTheme.grayscale
   };
+  static defaultTransitions = DefaultTransitions.discreteTransitions();
+  static displayName = "VictoryVoronoi";
 
-  static getDomain = Domain.getDomain.bind(Domain);
-  static getData = Data.getData.bind(Data);
-  static getBaseProps = partialRight(
-    VoronoiHelpers.getBaseProps.bind(VoronoiHelpers), fallbackProps);
   static expectedComponents = [
     "dataComponent", "labelComponent", "groupComponent", "containerComponent"
   ];
+
+  static getBaseProps = partialRight(
+    VoronoiHelpers.getBaseProps.bind(VoronoiHelpers), fallbackProps);
+
+  static getData = Data.getData.bind(Data);
+  static getDomain = Domain.getDomain.bind(Domain);
+  static propTypes = {
+    ...BaseProps,
+    ...DataProps,
+    size: CustomPropTypes.nonNegative
+  };
+  static role = "voronoi";
 
   // Overridden in native versions
   shouldAnimate() {

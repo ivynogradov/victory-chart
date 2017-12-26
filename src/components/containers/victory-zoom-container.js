@@ -2,9 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { defaults, get } from "lodash";
 import ZoomHelpers from "./zoom-helpers";
-import {
-  VictoryContainer, VictoryClipContainer, Data, PropTypes as CustomPropTypes
-} from "victory-core";
+import { VictoryContainer, VictoryClipContainer, Data } from "victory-core";
 
 const DEFAULT_DOWNSAMPLE = 150;
 

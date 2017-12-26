@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { PropTypes as CustomPropTypes } from "victory-core";
+import "victory-core";
 
 export const DataProps = {
   categories: PropTypes.oneOfType([

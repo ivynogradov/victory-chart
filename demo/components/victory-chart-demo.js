@@ -70,34 +70,6 @@ class App extends React.Component {
     window.clearInterval(this.setStateInterval);
   }
 
-  getData() {
-    return range(20).map((i) => {
-      return {
-        x: i,
-        y: Math.random()
-      };
-    });
-  }
-
-  getNumericBarData() {
-    return range(5).map(() => {
-      return [
-        {
-          x: random(1, 3),
-          y: random(1, 5)
-        },
-        {
-          x: random(4, 7),
-          y: random(1, 10)
-        },
-        {
-          x: random(9, 11),
-          y: random(1, 15)
-        }
-      ];
-    });
-  }
-
   getBarData() {
     return range(5).map(() => {
       return [
@@ -124,12 +96,40 @@ class App extends React.Component {
     });
   }
 
+  getData() {
+    return range(20).map((i) => {
+      return {
+        x: i,
+        y: Math.random()
+      };
+    });
+  }
+
   getMultiBarTransitionData() {
     const bars = random(6, 10);
     return range(5).map(() => {
       return range(bars).map((bar) => {
         return { x: bar, y: random(2, 10) };
       });
+    });
+  }
+
+  getNumericBarData() {
+    return range(5).map(() => {
+      return [
+        {
+          x: random(1, 3),
+          y: random(1, 5)
+        },
+        {
+          x: random(4, 7),
+          y: random(1, 10)
+        },
+        {
+          x: random(9, 11),
+          y: random(1, 15)
+        }
+      ];
     });
   }
 

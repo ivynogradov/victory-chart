@@ -1,10 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { partialRight } from "lodash";
-import {
-  PropTypes as CustomPropTypes, Helpers, VictoryLabel, addEvents,
-  VictoryContainer, VictoryTheme, DefaultTransitions, Candle
-} from "victory-core";
+import { Helpers, VictoryLabel, addEvents, VictoryContainer, VictoryTheme, DefaultTransitions, Candle } from "victory-core";
 import CandlestickHelpers from "./helper-methods";
 import { BaseProps, DataProps } from "../../helpers/common-props";
 
@@ -36,10 +33,30 @@ const animationWhitelist = [
 ];
 
 class VictoryCandlestick extends React.Component {
-  static displayName = "VictoryCandlestick";
-  static role = "candlestick";
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    data: defaultData,
+    dataComponent: <Candle/>,
+    groupComponent: <g role="presentation"/>,
+    labelComponent: <VictoryLabel/>,
+    samples: 50,
+    scale: "linear",
+    sortOrder: "ascending",
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
   static defaultTransitions = DefaultTransitions.discreteTransitions();
+  static displayName = "VictoryCandlestick";
 
+  static expectedComponents = [
+    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
+  ];
+
+  static getBaseProps = partialRight(
+    CandlestickHelpers.getBaseProps.bind(CandlestickHelpers), fallbackProps);
+
+  static getData = CandlestickHelpers.getData.bind(CandlestickHelpers);
+  static getDomain = CandlestickHelpers.getDomain.bind(CandlestickHelpers);
   static propTypes = {
     ...BaseProps,
     ...DataProps,
@@ -69,27 +86,7 @@ class VictoryCandlestick extends React.Component {
       PropTypes.arrayOf(PropTypes.string)
     ])
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    data: defaultData,
-    dataComponent: <Candle/>,
-    groupComponent: <g role="presentation"/>,
-    labelComponent: <VictoryLabel/>,
-    samples: 50,
-    scale: "linear",
-    sortOrder: "ascending",
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static getDomain = CandlestickHelpers.getDomain.bind(CandlestickHelpers);
-  static getData = CandlestickHelpers.getData.bind(CandlestickHelpers);
-  static getBaseProps = partialRight(
-    CandlestickHelpers.getBaseProps.bind(CandlestickHelpers), fallbackProps);
-  static expectedComponents = [
-    "dataComponent", "labelComponent", "groupComponent", "containerComponent"
-  ];
+  static role = "candlestick";
 
   // Overridden in native versions
   shouldAnimate() {

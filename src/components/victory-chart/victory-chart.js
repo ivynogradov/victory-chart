@@ -1,9 +1,7 @@
 import { defaults } from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
-import {
-  Helpers, VictorySharedEvents, VictoryContainer, VictoryTheme, Scale, PropTypes as CustomPropTypes
-} from "victory-core";
+import { Helpers, VictorySharedEvents, VictoryContainer, VictoryTheme, Scale } from "victory-core";
 import VictoryAxis from "../victory-axis/victory-axis";
 import VictoryPolarAxis from "../victory-polar-axis/victory-polar-axis";
 import ChartHelpers from "./helper-methods";
@@ -18,7 +16,26 @@ const fallbackProps = {
 };
 
 export default class VictoryChart extends React.Component {
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    defaultAxes: {
+      independent: <VictoryAxis/>,
+      dependent: <VictoryAxis dependentAxis/>
+    },
+    defaultPolarAxes: {
+      independent: <VictoryPolarAxis/>,
+      dependent: <VictoryPolarAxis dependentAxis/>
+    },
+    groupComponent: <g/>,
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
+
   static displayName = "VictoryChart";
+
+  static expectedComponents = [
+    "groupComponent", "containerComponent"
+  ];
 
   static propTypes = {
     ...BaseProps,
@@ -38,25 +55,6 @@ export default class VictoryChart extends React.Component {
     innerRadius: CustomPropTypes.nonNegative,
     startAngle: PropTypes.number
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    defaultAxes: {
-      independent: <VictoryAxis/>,
-      dependent: <VictoryAxis dependentAxis/>
-    },
-    defaultPolarAxes: {
-      independent: <VictoryPolarAxis/>,
-      dependent: <VictoryPolarAxis dependentAxis/>
-    },
-    groupComponent: <g/>,
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static expectedComponents = [
-    "groupComponent", "containerComponent"
-  ];
 
   constructor(props) {
     super(props);
@@ -83,20 +81,6 @@ export default class VictoryChart extends React.Component {
     this.events = Wrapper.getAllEvents(nextProps);
   }
 
-  getStyles(props) {
-    const styleProps = props.style && props.style.parent;
-    return {
-      parent: defaults(
-        {},
-        styleProps,
-        {
-          height: "100%",
-          width: "100%",
-          userSelect: "none"
-        }
-    ) };
-  }
-
   getAxisProps(child, props, calculatedProps) {
     const { domain, scale, originSign, stringMap, categories, horizontal } = calculatedProps;
     const childProps = child.props || {};
@@ -121,15 +105,6 @@ export default class VictoryChart extends React.Component {
       crossAxis,
       orientation
     };
-  }
-
-  getChildProps(child, props, calculatedProps) {
-    const axisChild = Axis.findAxisComponents([child]);
-    if (axisChild.length > 0) {
-      return this.getAxisProps(axisChild[0], props, calculatedProps);
-    }
-    const { categories, domain, range, scale } = calculatedProps;
-    return { categories, domain, range, scale };
   }
 
   getCalculatedProps(props, childComponents) {
@@ -190,6 +165,24 @@ export default class VictoryChart extends React.Component {
     };
   }
 
+  getChildProps(child, props, calculatedProps) {
+    const axisChild = Axis.findAxisComponents([child]);
+    if (axisChild.length > 0) {
+      return this.getAxisProps(axisChild[0], props, calculatedProps);
+    }
+    const { categories, domain, range, scale } = calculatedProps;
+    return { categories, domain, range, scale };
+  }
+
+  getContainerProps(props, calculatedProps) {
+    const { width, height, standalone, theme, polar } = props;
+    const { domain, scale, style, origin, radius } = calculatedProps;
+    return {
+      domain, scale, width, height, standalone, theme, style: style.parent, polar, radius,
+      origin: polar ? origin : undefined
+    };
+  }
+
   getNewChildren(props, childComponents, calculatedProps) {
     const baseStyle = calculatedProps.style.parent;
     const getAnimationProps = Wrapper.getAnimationProps.bind(this);
@@ -213,18 +206,23 @@ export default class VictoryChart extends React.Component {
     });
   }
 
+  getStyles(props) {
+    const styleProps = props.style && props.style.parent;
+    return {
+      parent: defaults(
+        {},
+        styleProps,
+        {
+          height: "100%",
+          width: "100%",
+          userSelect: "none"
+        }
+    ) };
+  }
+
   renderContainer(containerComponent, props) {
     const containerProps = defaults({}, containerComponent.props, props);
     return React.cloneElement(containerComponent, containerProps);
-  }
-
-  getContainerProps(props, calculatedProps) {
-    const { width, height, standalone, theme, polar } = props;
-    const { domain, scale, style, origin, radius } = calculatedProps;
-    return {
-      domain, scale, width, height, standalone, theme, style: style.parent, polar, radius,
-      origin: polar ? origin : undefined
-    };
   }
 
   render() {

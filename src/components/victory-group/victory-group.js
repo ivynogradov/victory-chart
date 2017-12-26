@@ -15,9 +15,25 @@ const fallbackProps = {
 };
 
 export default class VictoryGroup extends React.Component {
+  static defaultProps = {
+    containerComponent: <VictoryContainer/>,
+    groupComponent: <g/>,
+    samples: 50,
+    scale: "linear",
+    sortOrder: "ascending",
+    standalone: true,
+    theme: VictoryTheme.grayscale
+  };
+
   static displayName = "VictoryGroup";
 
-  static role = "group";
+  static expectedComponents = [
+    "groupComponent", "containerComponent", "labelComponent"
+  ];
+
+  static getData = Wrapper.getData.bind(Wrapper);
+
+  static getDomain = Wrapper.getDomain.bind(Wrapper);
 
   static propTypes = {
     ...BaseProps,
@@ -33,23 +49,7 @@ export default class VictoryGroup extends React.Component {
     horizontal: PropTypes.bool,
     offset: PropTypes.number
   };
-
-  static defaultProps = {
-    containerComponent: <VictoryContainer/>,
-    groupComponent: <g/>,
-    samples: 50,
-    scale: "linear",
-    sortOrder: "ascending",
-    standalone: true,
-    theme: VictoryTheme.grayscale
-  };
-
-  static expectedComponents = [
-    "groupComponent", "containerComponent", "labelComponent"
-  ];
-
-  static getDomain = Wrapper.getDomain.bind(Wrapper);
-  static getData = Wrapper.getData.bind(Wrapper);
+  static role = "group";
 
   constructor(props) {
     super(props);
@@ -73,6 +73,13 @@ export default class VictoryGroup extends React.Component {
       this.setAnimationState(this.props, nextProps);
     }
     this.events = Wrapper.getAllEvents(nextProps);
+  }
+
+  getAngularWidth(props, calculatedProps) {
+    const { range } = calculatedProps;
+    const angularRange = Math.abs(range.x[1] - range.x[0]);
+    const r = Math.max(...range.y);
+    return (props.offset / (2 * Math.PI * r)) * angularRange;
   }
 
   // eslint-disable-next-line max-statements
@@ -115,47 +122,6 @@ export default class VictoryGroup extends React.Component {
     };
   }
 
-  pixelsToValue(props, axis, calculatedProps) {
-    if (!props.offset) {
-      return 0;
-    }
-    const childComponents = React.Children.toArray(props.children);
-    const horizontalChildren = childComponents.some((child) => child.props.horizontal);
-    const horizontal = props && props.horizontal || horizontalChildren.length > 0;
-    const currentAxis = Helpers.getCurrentAxis(axis, horizontal);
-    const domain = calculatedProps.domain[currentAxis];
-    const range = calculatedProps.range[currentAxis];
-    const domainExtent = Math.max(...domain) - Math.min(...domain);
-    const rangeExtent = Math.max(...range) - Math.min(...range);
-    return domainExtent / rangeExtent * props.offset;
-  }
-
-  getX0(props, calculatedProps, index) {
-    const center = (calculatedProps.datasets.length - 1) / 2;
-    const totalWidth = this.pixelsToValue(props, "x", calculatedProps);
-    return (index - center) * totalWidth;
-  }
-
-  getPolarX0(props, calculatedProps, index) {
-    const center = (calculatedProps.datasets.length - 1) / 2;
-    const width = this.getAngularWidth(props, calculatedProps);
-    return (index - center) * width;
-  }
-
-  getAngularWidth(props, calculatedProps) {
-    const { range } = calculatedProps;
-    const angularRange = Math.abs(range.x[1] - range.x[0]);
-    const r = Math.max(...range.y);
-    return (props.offset / (2 * Math.PI * r)) * angularRange;
-  }
-
-  getLabels(props, datasets, index) {
-    if (!props.labels) {
-      return undefined;
-    }
-    return Math.floor(datasets.length / 2) === index ? props.labels : undefined;
-  }
-
   getChildProps(props, calculatedProps) {
     const { categories, domain, range, scale, horizontal, origin, padding } = calculatedProps;
     const { width, height, theme, polar } = props;
@@ -175,6 +141,14 @@ export default class VictoryGroup extends React.Component {
     : colorScaleOptions;
   }
 
+  getContainerProps(props, calculatedProps) {
+    const { width, height, standalone, theme, polar } = props;
+    const { domain, scale, style, origin } = calculatedProps;
+    return {
+      domain, scale, width, height, standalone, theme, style: style.parent, polar, origin
+    };
+  }
+
   getDataWithOffset(props, defaultDataset, offset) {
     const dataset = props.data || props.y ? Data.getData(props) : defaultDataset;
     const xOffset = offset || 0;
@@ -185,6 +159,13 @@ export default class VictoryGroup extends React.Component {
 
       return assign({}, datum, { _x1 });
     });
+  }
+
+  getLabels(props, datasets, index) {
+    if (!props.labels) {
+      return undefined;
+    }
+    return Math.floor(datasets.length / 2) === index ? props.labels : undefined;
   }
 
   // the old ones were bad
@@ -212,22 +193,41 @@ export default class VictoryGroup extends React.Component {
     });
   }
 
-  renderContainer(containerComponent, props) {
-    const containerProps = defaults({}, containerComponent.props, props);
-    return React.cloneElement(containerComponent, containerProps);
-  }
-
-  getContainerProps(props, calculatedProps) {
-    const { width, height, standalone, theme, polar } = props;
-    const { domain, scale, style, origin } = calculatedProps;
-    return {
-      domain, scale, width, height, standalone, theme, style: style.parent, polar, origin
-    };
+  getPolarX0(props, calculatedProps, index) {
+    const center = (calculatedProps.datasets.length - 1) / 2;
+    const width = this.getAngularWidth(props, calculatedProps);
+    return (index - center) * width;
   }
 
   getStyle(theme, style, role) {
     const defaultStyle = theme && theme[role] && theme[role].style ? theme[role].style : {};
     return Helpers.getStyles(style, defaultStyle);
+  }
+
+  getX0(props, calculatedProps, index) {
+    const center = (calculatedProps.datasets.length - 1) / 2;
+    const totalWidth = this.pixelsToValue(props, "x", calculatedProps);
+    return (index - center) * totalWidth;
+  }
+
+  pixelsToValue(props, axis, calculatedProps) {
+    if (!props.offset) {
+      return 0;
+    }
+    const childComponents = React.Children.toArray(props.children);
+    const horizontalChildren = childComponents.some((child) => child.props.horizontal);
+    const horizontal = props && props.horizontal || horizontalChildren.length > 0;
+    const currentAxis = Helpers.getCurrentAxis(axis, horizontal);
+    const domain = calculatedProps.domain[currentAxis];
+    const range = calculatedProps.range[currentAxis];
+    const domainExtent = Math.max(...domain) - Math.min(...domain);
+    const rangeExtent = Math.max(...range) - Math.min(...range);
+    return domainExtent / rangeExtent * props.offset;
+  }
+
+  renderContainer(containerComponent, props) {
+    const containerProps = defaults({}, containerComponent.props, props);
+    return React.cloneElement(containerComponent, containerProps);
   }
 
   render() {
